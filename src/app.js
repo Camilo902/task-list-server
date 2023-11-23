@@ -4,7 +4,7 @@ const app = express();
 const PORT = 3002;
 
 const listViewRouter = require('./list-view-router');
-const listViewRouter = require('./list-edit-router');
+const listEditRouter = require('./list-edit-router');
 
 app.use('/list-view', listViewRouter);
 app.use('/list-edit', listEditRouter);

@@ -4,7 +4,7 @@ const express = require("express");
 
     let lista = require("./lista.json");
 
-    app.get("/",(req, res)=>{
+    app.get("/lista",(req, res)=>{
         res.send(lista);
     })
 

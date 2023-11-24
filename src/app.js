@@ -2,11 +2,12 @@
 const express = require("express");
 const app = express();
 const PORT = 3002;
+app.use(express.json());
 
 const viewRouter = require('./list-view-router');
 const editRouter = require('./list-edit-router');
-app.use('/list', viewRouter);
-app.use('/list', editRouter);
+app.use('/', viewRouter);
+app.use('/', editRouter);
 
 
 app.get("/", (req,res)=>{

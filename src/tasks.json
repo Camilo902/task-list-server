@@ -1,0 +1,23 @@
+
+[
+  {
+    "id": 1,
+    "isCompleted": false,
+    "description": "Sacar al Perro"
+  },
+  {
+    "id": 2,
+    "isCompleted": true,
+    "description": "Lavar la Losa"
+  },
+  {
+    "id": 3,
+    "isCompleted": false,
+    "description": "Organizar el cuarto"
+  },
+  {
+    "id": 4,
+    "isCompleted": true,
+    "description": "Regar las plantas"
+  }
+]

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const tasks = require('./tasks')
+const tasks = require('./tasks');
 
 router.get("/tasks", (req, res) => {
   res.json(tasks);
@@ -22,9 +22,9 @@ router.get("/tasks/filter/:status", (req, res) => {
   const status = req.params.status.toLocaleLowerCase();
   const filterTask = tasks.filter((task) => {
     if (status === "completo") {
-      return task.completo === true;
+      return task.isCompleted === true;
     } else if (status === "incompleto") {
-      return task.completo === false;
+      return task.isCompleted === false;
     } else {
       res.status(400).json({ error: "Filtro no Valido" });
     }

@@ -1,10 +1,16 @@
 const express = require('express');
 const listEditRouter = express.Router();
+const tasks = require('./tasks')
+
+
 
 
 listEditRouter.post('/tasks/create', (req, res) => {
+  const newTask = req.body;
+  tasks.push(newTask);
+  console.log('***', newTask);
 
-  res.send('Crear una nueva tarea');
+  res.status(200).send('Nueva Tarea Creada');
 });
 
 

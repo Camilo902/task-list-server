@@ -1,26 +1,35 @@
-const express = require('express');
-const listViewRouter = express.Router();
+const express = require("express");
+const router = express.Router();
+const tasks = require('./tasks')
 
-
-listViewRouter.get('/tasks:taskId', (req, res) => {
-  const taskId = req.params.taskId;
-  if(taskId === 'lista'){
-  res.send('Lista de todas las tareas');
-}else{
-  ('Valor no valido');
-}
+router.get("/tasks", (req, res) => {
+  res.json(tasks);
 });
 
+router.get("/tasks/:taskId", (req, res) => {
+  const taskId = parseInt(req.params.taskId);
 
-listViewRouter.get('/tasks/:taskId', (req, res) => {
-  const taskId = req.params.taskId;
-  res.send(`Detalles de la tarea ${taskId}`);
+  const task = tasks.find((task) => task.id === taskId);
+
+  if (task) {
+    res.json(task);
+  } else {
+    res.status(404).json({ error: "Tarea no Encontrada" });
+  }
 });
 
-
-listViewRouter.get('/tasks/filter/:status', (req, res) => {
-  const status = req.params.status;
-  res.send(`Filtrar tareas por estado: ${status}`);
+router.get("/tasks/filter/:status", (req, res) => {
+  const status = req.params.status.toLocaleLowerCase();
+  const filterTask = tasks.filter((task) => {
+    if (status === "completo") {
+      return task.completo === true;
+    } else if (status === "incompleto") {
+      return task.completo === false;
+    } else {
+      res.status(400).json({ error: "Filtro no Valido" });
+    }
+  });
+  res.json(filterTask);
 });
 
-module.exports = listViewRouter;
+module.exports = router;

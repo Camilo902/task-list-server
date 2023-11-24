@@ -3,11 +3,10 @@ const express = require("express");
 const app = express();
 const PORT = 3002;
 
-const listViewRouter = require('./list-view-router');
-const listEditRouter = require('./list-edit-router');
-
-app.use('/list-view', listViewRouter);
-app.use('/list-edit', listEditRouter);
+const viewRouter = require('./list-view-router');
+const editRouter = require('./list-edit-router');
+app.use('/list', viewRouter);
+app.use('/list', editRouter);
 
 
 app.get("/", (req,res)=>{

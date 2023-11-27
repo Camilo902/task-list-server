@@ -6,8 +6,8 @@ app.use(express.json());
 
 const viewRouter = require('./list-view-router');
 const editRouter = require('./list-edit-router');
-app.use('/', viewRouter);
-app.use('/', editRouter);
+app.use('/view', viewRouter);
+app.use('/edit', editRouter);
 
 
 app.get("/", (req,res)=>{

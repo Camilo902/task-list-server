@@ -1,16 +1,11 @@
 #¿Qué es mi producto y para que sirve?
 
 Es un servidor de tareas construido con Node.js y Express. 
-Sirve para proporcionar una API ( Interfaz de procesamiento de aplicaciones entre un servidor web y un navegador web) que permite a los usuarios gestionar tareas. 
-Los usuarios pueden acceder a la lista de tareas, agregar nuevas tareas, marcar tareas como completadas, 
-entre otras funcionalidades.
+Sirve para proporcionar una API ( Interfaz de procesamiento de aplicaciones entre un servidor web y un navegador web) que permite a los usuarios visualizar su lista de tareas.
 
 #¿Cuáles son las funcionalidades más importantes y porque los usuarios las usarían?
 
 1. Obtener una lista de tareas.
-2. Agregar una nueva tarea.
-3. Marcar tareas como completadas.
-4. Los usuarios usarían estas funcionalidades para administrar sus tareas.
 5. Realizar un seguimiento de las actividades pendientes y completadas.
 6. Tener un sistema de organización eficiente.
 

@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const PORT = 3003;
+const task = require("./tasks.json");
 app.use(express.json());
 
 const viewRouter = require('./list-view-router');
@@ -12,7 +13,7 @@ app.use('/edit', editRouter);
 
 app.get("/", (req,res)=>{
   res.send("Bienvenid@ al laboraotio de routing");
-})
+});
 //Se recomienda no editar ni eliminar la instancia del servidor.
 // Instancia del servidor
 const server = app.listen(PORT, () => {

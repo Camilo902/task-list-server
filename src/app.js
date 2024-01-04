@@ -1,82 +1,61 @@
-// TODO: Completa tu código aquí ⬇️
-const express = require("express");
+const express = require('express');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 const app = express();
-const PORT = 3003;
-const task = require("./tasks.json");
-app.use(express.json());
+const PORT = process.env.PORT || 3030;
+const SECRET_KEY = process.env.JWT_SECRET;
 
-const viewRouter = require('./list-view-router');
-const editRouter = require('./list-edit-router');
-app.use('/view', viewRouter);
-app.use('/edit', editRouter);
+const users = [
+  { username: 'user1', password: 'password1' },
+  { username: 'user2', password: 'password2' },
+  { username: 'user3', password: 'password3' },
+  { username: 'user4', password: 'password4' },
+  { username: 'user5', password: 'password5' },
+];
 
+app.use(bodyParser.json());
 
-app.get("/", (req,res)=>{
-  res.send("Bienvenid@ al laboraotio de routing");
-});
+// Middleware para verificar el token JWT
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
 
-
-//Middleware a nivel de aplicación para validar métodos HTTP
-app.use((req, res, next) => {
-  const validMethods = ['GET', 'POST', 'PUT', 'DELETE'];
-
-  if (!validMethods.includes(req.method)) {
-    return res.status(400).json({ message: 'Invalid HTTP method' });
+  if (!token) {
+    return res.status(401).json({ error: 'Token no proporcionado' });
   }
 
-  next();
-});
-
-// Middleware para list-edit-router
-const listEditRouterMiddleware = (req, res, next) => {
-  if ((req.method === 'POST' || req.method === 'PUT') && !req.body) {
-    return res.status(400).json({ message: 'Empty body in the request' });
-  }
-
-  // Validar los atributos necesarios para crear tareas
-  if (req.method === 'POST' && (!req.body.title || !req.body.description)) {
-    return res.status(400).json({ message: 'Missing attributes to create tasks' });
-  }
-
-  // Validar los atributos necesarios para actualizar tareas
-  if (req.method === 'PUT' && (!req.body.title || !req.body.description)) {
-    return res.status(400).json({ message: 'Missing attributes to update tasks' });
-  }
-
-  next();
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ error: 'Token inválido' });
+    }
+    req.user = decoded;
+    next();
+  });
 };
 
-// Middleware para list-view-router
-const listViewRouterMiddleware = (req, res, next) => {
-  // Validar parametros
-  const { param1, param2 } = req.params;
+// Ruta de autenticación
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
 
-  if (!param1 || !param2) {
-    return res.status(400).json({ message: 'Incorrect parameters' });
+  const user = users.find((u) => u.username === username && u.password === password);
+
+  if (!user) {
+    return res.status(401).json({ error: 'Credenciales inválidas' });
   }
 
-  next();
-};
+  const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: '1h' });
 
-// Aplicando middleware a los routers
-app.use('/list-edit', listEditRouterMiddleware);
-app.use('/list-view/:param1/:param2', listViewRouterMiddleware);
-
-// Example route that should exist
-app.get("/this-should-exists", (req, res) => {
-  res.status(404).json({ message: "Not found" });
+  res.json({ token });
 });
 
-// gestion de rutas no encontradas
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// Ruta protegida
+app.get('/protected', verifyToken, (req, res) => {
+  res.json({ message: 'Ruta protegida', user: req.user });
 });
 
-//Se recomienda no editar ni eliminar la instancia del servidor.
-// Instancia del servidor
-const server = app.listen(PORT, () => {
-  console.log(`listening on port http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
-// Exportación del servidor
-module.exports = server;

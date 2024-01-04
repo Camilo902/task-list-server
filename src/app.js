@@ -1,61 +1,85 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const express = require("express");
+const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = process.env.PORT || 3030;
-const SECRET_KEY = process.env.JWT_SECRET;
-
-const users = [
-  { username: 'user1', password: 'password1' },
-  { username: 'user2', password: 'password2' },
-  { username: 'user3', password: 'password3' },
-  { username: 'user4', password: 'password4' },
-  { username: 'user5', password: 'password5' },
-];
+const PORT = 3060;
 
 app.use(bodyParser.json());
 
-// Middleware para verificar el token JWT
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
+const tasks = [
+  { id: 1, description: "Hacer mercado", completed: false },
+  { id: 2, description: "Estudiar para el examen", completed: true },
+  { id: 3, description: "Sacar al perro", completed: false },
+  { id: 4, description: "Visitar a el abuelo", completed: true },
+  { id: 5, description: "Hacer la cena", completed: true },
+  { id: 6, description: "Lavar la losa", completed: false },
 
-  if (!token) {
-    return res.status(401).json({ error: 'Token no proporcionado' });
-  }
+];
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: 'Token inválido' });
-    }
-    req.user = decoded;
-    next();
-  });
-};
-
-// Ruta de autenticación
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  const user = users.find((u) => u.username === username && u.password === password);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
-  }
-
-  const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: '1h' });
-
-  res.json({ token });
+// Listar todas las tareas
+app.get("/tasks", (req, res) => {
+  res.status(200).json(tasks);
 });
 
-// Ruta protegida
-app.get('/protected', verifyToken, (req, res) => {
-  res.json({ message: 'Ruta protegida', user: req.user });
+// Listar tareas completas
+app.get("/tasks/completed", (req, res) => {
+  const completedTasks = tasks.filter((task) => task.completed);
+  res.status(200).json(completedTasks);
+});
+
+// Listar tareas incompletas
+app.get("/tasks/incomplete", (req, res) => {
+  const incompleteTasks = tasks.filter((task) => !task.completed);
+  res.status(200).json(incompleteTasks);
+});
+
+// Obtener una sola tarea
+app.get("/tasks/:id", (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const task = tasks.find((task) => task.id === taskId);
+
+  if (task) {
+    res.status(200).json(task);
+  } else {
+    res.status(404).json({ error: "Tarea no encontrada" });
+  }
+});
+
+// Crear una nueva tarea
+app.post("/tasks", (req, res) => {
+  const newTask = req.body;
+  tasks.push(newTask);
+  res.status(201).json({ createdTask: newTask });
+});
+
+// Actualizar una tarea
+app.put("/tasks/:id", (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const updatedTask = req.body;
+
+  const index = tasks.findIndex((task) => task.id === taskId);
+
+  if (index !== -1) {
+    tasks[index] = updatedTask;
+    res.status(200).json({ updatedTask });
+  } else {
+    res.status(404).json({ error: "Tarea no encontrada" });
+  }
+});
+
+// Eliminar una tarea
+app.delete("/tasks/:id", (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const index = tasks.findIndex((task) => task.id === taskId);
+
+  if (index !== -1) {
+    const deletedTask = tasks.splice(index, 1)[0];
+    res.status(200).json({ deletedTask });
+  } else {
+    res.status(404).json({ error: "Tarea no encontrada" });
+  }
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
